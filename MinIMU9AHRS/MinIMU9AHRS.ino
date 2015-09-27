@@ -121,11 +121,15 @@ const unsigned int ports [mCount] = {6, 7, 8, 9}; //Port of each servo
 byte motorPos [mCount];
 byte fbwMotorPos [mCount];
 float pitchDifferential;
+float rollDifferential;
 int badReceiveCounter = 0;
 
 unsigned int flightMode = 1; //1: Manual, 2: Stabilised straight
+
 float previousPitch;
 long previousPitchTime;
+float previousRoll;
+long previousRollTime;
 
 unsigned long duration;
 unsigned long cm;

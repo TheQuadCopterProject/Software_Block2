@@ -28,11 +28,14 @@ void stabilisedHover()
       ++badReceiveCounter;
     }
     
+    //fly by wire
     medianMotorPos = motorSum / 4;
          
     for (int i = 0; i < mCount; ++i) {
       motorPos[i] = medianMotorPos;
     }
+    
+    //pitch
          
     //pitchDifferential = 1/6 * ToDeg(pitch);
     
@@ -77,6 +80,50 @@ void stabilisedHover()
     
     previousPitch = ToDeg(pitch);
     previousPitchTime = millis();
+    
+    //roll
+    
+    float deltaRoll = ToDeg(roll) - previousRoll;
+    deltaTime = millis() - previousRollTime;
+    
+    if (ToDeg(roll) < -0.75) {
+      if (deltaRoll / deltaTime <= (3/50) + (3/50/10) && deltaRoll / deltaTime >= (3/50) - (3/50/10)) {
+      }
+      else {
+        if (deltaRoll / deltaTime <= (3/50)) {
+          rollDifferential += 0.05 * (deltaTime / 10) - (ToDeg(roll)/400);
+        }
+      
+        if (deltaRoll / deltaTime >= (3/50)) {
+          rollDifferential -= 0.05 * (deltaTime / 10) + (ToDeg(roll)/400);
+        }
+      }
+    }
+    
+    if (ToDeg(roll) > 0.75) {
+      if (deltaRoll / deltaTime <= (3/50) + (3/50/10) && deltaRoll / deltaTime >= (3/50) - (3/50/10)) { 
+      }
+      else {
+        if (deltaRoll / deltaTime <= (3/50)) {
+          rollDifferential -= 0.05 * (deltaTime / 10) - (ToDeg(roll)/400);
+        } 
+        if (deltaRoll / deltaTime >= (3/50)) {
+          rollDifferential += 0.05 * (deltaTime / 10) + (ToDeg(roll)/400);
+        }
+      }
+    }
+    
+    else {
+      rollDifferential = 0;
+    }
+    
+    motorPos [0] += (int) rollDifferential;
+    motorPos [2] += (int) rollDifferential;
+    motorPos [1] -= (int) rollDifferential;
+    motorPos [3] -= (int) rollDifferential;
+    
+    previousRoll = ToDeg(roll);
+    previousRollTime = millis();
       
     for (int i = 0; i < mCount; ++i) {
        if (chkSum != motorSum)
@@ -87,7 +134,6 @@ void stabilisedHover()
          motors [i].write (motorPos[i]);
        }
     }
-    
 }
 
 
